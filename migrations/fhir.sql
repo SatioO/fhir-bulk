@@ -5,9 +5,9 @@ CREATE TABLE `fhir_app` (
   `id` VARCHAR(50) NOT NULL,
   `base_url` VARCHAR(255) NOT NULL,
   `token` VARCHAR(1000) NULL,
-  `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` TIMESTAMP NULL,
   PRIMARY KEY(`id`)
 );
 CREATE TABLE `auth_server` (
@@ -19,7 +19,7 @@ CREATE TABLE `auth_server` (
   `app_id` VARCHAR(50) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` TIMESTAMP NULL,
   PRIMARY KEY(`id`),
   FOREIGN KEY(`app_id`) REFERENCES `fhir_app`(`id`)
 );

@@ -9,20 +9,20 @@ type AuthService interface {
 	RegisterAuthServer(string, *RegisterAuthServerRequest) (string, error)
 }
 
-type authServiceImpl struct {
+type service struct {
 	authRepo   *AuthRepo
 	authClient *authClient
 }
 
 func NewAuthService(authRepo *AuthRepo, authClient *authClient) AuthService {
-	return &authServiceImpl{authRepo, authClient}
+	return &service{authRepo, authClient}
 }
 
-func (a *authServiceImpl) GetAuthServerForApp(appId string) (domain.FHIRAuthServer, error) {
+func (a *service) GetAuthServerForApp(appId string) (domain.FHIRAuthServer, error) {
 	return a.authRepo.GetAuthServerForApp(appId)
 }
 
-func (a *authServiceImpl) RegisterAuthServer(appId string, body *RegisterAuthServerRequest) (string, error) {
+func (a *service) RegisterAuthServer(appId string, body *RegisterAuthServerRequest) (string, error) {
 	entity := domain.FHIRAuthServer{
 		TokenURL:     body.TokenUrl,
 		ClientID:     body.ClientID,

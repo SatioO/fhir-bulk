@@ -5,9 +5,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/satioO/fhir/v2/domain"
 )
+
+type ErrorResponse struct {
+	Message string `json:"message"`
+}
+
+type SuccessResponse struct {
+	Data []any `json:"data"`
+}
 
 func Error(w http.ResponseWriter, r *http.Request, err error, code int) {
 	w.Header().Set("Content-Type", "application/json")
@@ -18,7 +24,7 @@ func Error(w http.ResponseWriter, r *http.Request, err error, code int) {
 	}
 	logErr := err
 
-	errorMsgJSON, err := json.Marshal(domain.ErrorResponse{Message: err.Error()})
+	errorMsgJSON, err := json.Marshal(ErrorResponse{Message: err.Error()})
 
 	if err != nil {
 		log.Println(err)
