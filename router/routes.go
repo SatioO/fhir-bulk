@@ -18,7 +18,14 @@ func RegisterRoutes() *http.ServeMux {
 }
 
 func addRoutes(r *http.ServeMux) {
-	conn := ConnectToDB()
+	config := DBServerConfig{
+		Username: "root",
+		Password: "password",
+		Name:     "fhir",
+		Host:     "127.0.0.1",
+		Port:     "3306",
+	}
+	conn := ConnectToDB(&config)
 
 	authClient := auth.NewAuthClient()
 
@@ -48,32 +55,7 @@ type DBServerConfig struct {
 
 type DBOption func(*DBServerConfig)
 
-func WithUsername(o string) DBOption {
-	return func(db *DBServerConfig) { db.Username = o }
-}
-
-func WithPassword(o string) DBOption {
-	return func(db *DBServerConfig) { db.Password = o }
-}
-
-func WithHost(o string) DBOption {
-	return func(db *DBServerConfig) { db.Host = o }
-}
-
-func WithPort(o string) DBOption {
-	return func(db *DBServerConfig) { db.Port = o }
-}
-
-func WithDatabase(o string) DBOption {
-	return func(db *DBServerConfig) { db.Name = o }
-}
-
-func ConnectToDB(opts ...DBOption) *gorm.DB {
-	config := DBServerConfig{Username: "root", Password: "password", Name: "fhir", Host: "127.0.0.1", Port: "3306"}
-	for _, opt := range opts {
-		opt(&config)
-	}
-
+func ConnectToDB(config *DBServerConfig) *gorm.DB {
 	dsn := config.Username + ":" + config.Password + "@tcp" + "(" + config.Host + ":" + config.Port + ")/" + config.Name + "?" + "parseTime=true&loc=Local"
 	conn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 

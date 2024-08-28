@@ -1,7 +1,9 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/satioO/fhir/v2/api"
@@ -28,26 +30,27 @@ func (h *authHandler) GetAuthServerForApp(w http.ResponseWriter, r *http.Request
 }
 
 func (h *authHandler) RegisterAuthServer(w http.ResponseWriter, r *http.Request) {
-	// jsonObj, err := io.ReadAll(r.Body)
+	appId := r.PathValue("appId")
+	jsonObj, err := io.ReadAll(r.Body)
 
-	// if err != nil {
-	// 	api.Error(w, r, fmt.Errorf("failed to read body: %v", err), http.StatusBadRequest)
-	// 	return
-	// }
+	if err != nil {
+		api.Error(w, r, fmt.Errorf("failed to read body: %v", err), http.StatusBadRequest)
+		return
+	}
 
-	// var body RegisterAuthClientRequest
-	// if err := json.Unmarshal(jsonObj, &body); err != nil {
-	// 	api.Error(w, r, fmt.Errorf("failed to parse body: %v", err), http.StatusBadRequest)
-	// 	return
-	// }
+	var body RegisterAuthServerRequest
+	if err := json.Unmarshal(jsonObj, &body); err != nil {
+		api.Error(w, r, fmt.Errorf("failed to parse body: %v", err), http.StatusBadRequest)
+		return
+	}
 
-	// result, err := h.authService.RegisterAuthServer(body)
+	result, err := h.authService.RegisterAuthServer(appId, &body)
 
-	// if err != nil {
-	// 	api.Error(w, r, fmt.Errorf("failed to fetch client: %v", err), http.StatusBadRequest)
-	// 	return
-	// }
+	if err != nil {
+		api.Error(w, r, fmt.Errorf("failed to fetch client: %v", err), http.StatusBadRequest)
+		return
+	}
 
-	// api.SuccessJson(w, r, result)
+	api.SuccessJson(w, r, result)
 
 }
