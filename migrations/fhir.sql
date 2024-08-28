@@ -1,5 +1,5 @@
-DROP TABLE `fhir_app`;
 DROP TABLE `auth_server`;
+DROP TABLE `fhir_app`;
 
 CREATE TABLE `fhir_app` (
   `id` VARCHAR(50) NOT NULL,
@@ -15,7 +15,6 @@ CREATE TABLE `auth_server` (
   `token_url` VARCHAR(255) NULL,
   `client_id` VARCHAR(255) NOT NULL,
   `client_secret` VARCHAR(255) NOT NULL,
-  `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
   `app_id` VARCHAR(50) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -23,6 +22,8 @@ CREATE TABLE `auth_server` (
   PRIMARY KEY(`id`),
   FOREIGN KEY(`app_id`) REFERENCES `fhir_app`(`id`)
 );
+
+SHOW TABLES;
 
 -- INSERT INTO `fhir_client` (`id`, `base_url`, `token`, `status`) VALUES ('CERNER', 'https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d', '', 'active');
 -- INSERT INTO `fhir_client` (`id`, `base_url`, `token`, `status`) VALUES ('EPIC', 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/DSTU2', '', 'inactive');

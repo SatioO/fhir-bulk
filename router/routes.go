@@ -20,10 +20,12 @@ func RegisterRoutes() *http.ServeMux {
 func addRoutes(r *http.ServeMux) {
 	conn := ConnectToDB()
 
+	authClient := auth.NewAuthClient()
+
 	fhirAppRepo := fhir_app.NewFHIRAppRepo(conn)
 	authRepo := auth.NewAuthRepo(conn)
 
-	authService := auth.NewAuthService(authRepo)
+	authService := auth.NewAuthService(authRepo, authClient)
 
 	fhirAppHandler := fhir_app.NewFHIRAppHandler(fhirAppRepo, authService)
 	authServerHandler := auth.NewAuthHandler(authService)

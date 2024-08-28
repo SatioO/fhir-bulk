@@ -10,8 +10,8 @@ type FHIRAppRepo struct {
 	db *gorm.DB
 }
 
-func NewFHIRAppRepo(conn *gorm.DB) *FHIRAppRepo {
-	return &FHIRAppRepo{db: conn}
+func NewFHIRAppRepo(db *gorm.DB) *FHIRAppRepo {
+	return &FHIRAppRepo{db}
 }
 
 func (d *FHIRAppRepo) GetApps() ([]domain.FHIRApp, error) {
@@ -33,4 +33,17 @@ func (d *FHIRAppRepo) CreateApp(body *CreateFHIRAppRequest) (domain.FHIRApp, err
 	result := d.db.Omit(clause.Associations).Create(&entity)
 
 	return entity, result.Error
+}
+
+func (d *FHIRAppRepo) UpdateToken(appId, token string) error {
+	var entity domain.FHIRApp
+	result := d.db.Where(domain.FHIRApp{ID: appId, Status: "active"}).First(&entity)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	entity.Token = token
+	result = d.db.Save(&entity)
+
+	return result.Error
 }

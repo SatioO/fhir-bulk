@@ -43,6 +43,8 @@ func (p *fhirApp) GetAppById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *fhirApp) RegisterApp(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
 	jsonObj, err := io.ReadAll(r.Body)
 
 	if err != nil {
@@ -62,9 +64,15 @@ func (p *fhirApp) RegisterApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = p.auth.RegisterAuthServer(app.ID, body.RegisterAuthServerRequest)
+	token, err := p.auth.RegisterAuthServer(app.ID, &body.RegisterAuthServerRequest)
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to create auth server: %v", err), http.StatusInternalServerError)
+		return
+	}
+	app.Token = token
+
+	if err := p.fhirAppRepo.UpdateToken(app.ID, token); err != nil {
+		api.Error(w, r, fmt.Errorf("failed to update token: %v", err), http.StatusInternalServerError)
 		return
 	}
 

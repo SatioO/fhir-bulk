@@ -1,32 +1,40 @@
 package auth
 
-import "github.com/satioO/fhir/v2/domain"
+import (
+	"github.com/satioO/fhir/v2/domain"
+)
 
 type AuthService interface {
 	GetAuthServerForApp(string) (domain.FhirAuthServer, error)
-	RegisterAuthServer(string, RegisterAuthServerRequest) (domain.FhirAuthServer, error)
+	RegisterAuthServer(string, *RegisterAuthServerRequest) (string, error)
 }
 
 type authServiceImpl struct {
-	authRepo *AuthRepo
+	authRepo   *AuthRepo
+	authClient *authClient
 }
 
-func NewAuthService(authRepo *AuthRepo) AuthService {
-	return &authServiceImpl{authRepo}
+func NewAuthService(authRepo *AuthRepo, authClient *authClient) AuthService {
+	return &authServiceImpl{authRepo, authClient}
 }
 
 func (a *authServiceImpl) GetAuthServerForApp(appId string) (domain.FhirAuthServer, error) {
 	return a.authRepo.GetAuthServerForApp(appId)
 }
 
-func (a *authServiceImpl) RegisterAuthServer(appId string, body RegisterAuthServerRequest) (domain.FhirAuthServer, error) {
+func (a *authServiceImpl) RegisterAuthServer(appId string, body *RegisterAuthServerRequest) (string, error) {
 	entity := domain.FhirAuthServer{
 		TokenURL:     body.TokenUrl,
 		ClientID:     body.ClientID,
 		ClientSecret: body.ClientSecret,
 		AppID:        appId,
-		Status:       "active",
 	}
 
-	return a.authRepo.RegisterAuthServer(entity)
+	auth, err := a.authRepo.RegisterAuthServer(entity)
+
+	if err != nil {
+		return "", err
+	}
+
+	return a.authClient.GenerateToken(&auth)
 }

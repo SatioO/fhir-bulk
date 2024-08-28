@@ -26,6 +26,7 @@ const (
 type FHIRApp struct {
 	ID        string
 	BaseUrl   string
+	Token     string
 	Status    Status
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -45,7 +46,6 @@ type FhirAuthServer struct {
 	ClientID     string
 	ClientSecret string
 	AppID        string
-	Status       Status
 }
 
 func (FhirAuthServer) TableName() string {

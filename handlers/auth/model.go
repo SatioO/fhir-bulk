@@ -6,3 +6,7 @@ type RegisterAuthServerRequest struct {
 	ClientSecret string `json:"clientSecret"`
 	Scopes       string `json:"scopes"`
 }
+
+type AuthClientResponse struct {
+	AccessToken string `json:"access_token"`
+}
