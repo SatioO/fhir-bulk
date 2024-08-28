@@ -33,8 +33,9 @@ func addRoutes(r *http.ServeMux) {
 	authRepo := auth.NewAuthRepo(conn)
 
 	authService := auth.NewAuthService(authRepo, authClient)
+	fhirAppService := fhir_app.NewFHIRAppService(fhirAppRepo)
 
-	fhirAppHandler := fhir_app.NewFHIRAppHandler(fhirAppRepo, authService)
+	fhirAppHandler := fhir_app.NewFHIRAppHandler(fhirAppService, authService)
 	authServerHandler := auth.NewAuthHandler(authService)
 
 	r.HandleFunc("GET /api/v1/fhir/app", fhirAppHandler.GetApps)

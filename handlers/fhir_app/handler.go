@@ -11,16 +11,16 @@ import (
 )
 
 type fhirApp struct {
-	fhirAppRepo *FHIRAppRepo
-	auth        auth.AuthService
+	fhirAppService FHIRAppService
+	auth           auth.AuthService
 }
 
-func NewFHIRAppHandler(fhirAppRepo *FHIRAppRepo, auth auth.AuthService) *fhirApp {
-	return &fhirApp{fhirAppRepo: fhirAppRepo, auth: auth}
+func NewFHIRAppHandler(fhirAppService FHIRAppService, auth auth.AuthService) *fhirApp {
+	return &fhirApp{fhirAppService, auth}
 }
 
 func (p *fhirApp) GetApps(w http.ResponseWriter, r *http.Request) {
-	result, err := p.fhirAppRepo.GetApps()
+	result, err := p.fhirAppService.GetApps()
 
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to get apps: %v", err), http.StatusInternalServerError)
@@ -33,7 +33,7 @@ func (p *fhirApp) GetApps(w http.ResponseWriter, r *http.Request) {
 func (p *fhirApp) GetAppById(w http.ResponseWriter, r *http.Request) {
 	appId := r.PathValue("appId")
 
-	result, err := p.fhirAppRepo.GetAppById(appId)
+	result, err := p.fhirAppService.GetAppById(appId)
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to fetch app: %v", err), http.StatusBadRequest)
 		return
@@ -58,7 +58,7 @@ func (p *fhirApp) RegisterApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app, err := p.fhirAppRepo.CreateApp(&body)
+	app, err := p.fhirAppService.CreateApp(&body)
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to create app: %v", err), http.StatusInternalServerError)
 		return
@@ -71,7 +71,7 @@ func (p *fhirApp) RegisterApp(w http.ResponseWriter, r *http.Request) {
 	}
 	app.Token = token
 
-	if err := p.fhirAppRepo.UpdateToken(app.ID, token); err != nil {
+	if err := p.fhirAppService.UpdateToken(app.ID, token); err != nil {
 		api.Error(w, r, fmt.Errorf("failed to update token: %v", err), http.StatusInternalServerError)
 		return
 	}

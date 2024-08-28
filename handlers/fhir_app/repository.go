@@ -22,21 +22,19 @@ func (d *FHIRAppRepo) GetApps() ([]domain.FHIRApp, error) {
 
 func (d *FHIRAppRepo) GetAppById(appId string) (domain.FHIRApp, error) {
 	var entity domain.FHIRApp
-	result := d.db.First(&entity, appId)
+	result := d.db.Where(domain.FHIRApp{ID: appId}).First(&entity)
 
 	return entity, result.Error
 }
 
-func (d *FHIRAppRepo) CreateApp(body *CreateFHIRAppRequest) (domain.FHIRApp, error) {
-	entity := domain.FHIRApp{ID: body.ID, BaseUrl: body.BaseUrl}
+func (d *FHIRAppRepo) CreateApp(entity domain.FHIRApp) (domain.FHIRApp, error) {
 	result := d.db.Create(&entity)
-
 	return entity, result.Error
 }
 
 func (d *FHIRAppRepo) UpdateToken(appId, token string) error {
 	var entity domain.FHIRApp
-	result := d.db.First(&entity, appId)
+	result := d.db.Where(domain.FHIRApp{ID: appId}).First(&entity)
 	if result.Error != nil {
 		return result.Error
 	}
