@@ -5,7 +5,7 @@ import (
 )
 
 type AuthService interface {
-	GetAuthServerForApp(string) (domain.FhirAuthServer, error)
+	GetAuthServerForApp(string) (domain.FHIRAuthServer, error)
 	RegisterAuthServer(string, *RegisterAuthServerRequest) (string, error)
 }
 
@@ -18,15 +18,16 @@ func NewAuthService(authRepo *AuthRepo, authClient *authClient) AuthService {
 	return &authServiceImpl{authRepo, authClient}
 }
 
-func (a *authServiceImpl) GetAuthServerForApp(appId string) (domain.FhirAuthServer, error) {
+func (a *authServiceImpl) GetAuthServerForApp(appId string) (domain.FHIRAuthServer, error) {
 	return a.authRepo.GetAuthServerForApp(appId)
 }
 
 func (a *authServiceImpl) RegisterAuthServer(appId string, body *RegisterAuthServerRequest) (string, error) {
-	entity := domain.FhirAuthServer{
+	entity := domain.FHIRAuthServer{
 		TokenURL:     body.TokenUrl,
 		ClientID:     body.ClientID,
 		ClientSecret: body.ClientSecret,
+		Scopes:       body.Scopes,
 		AppID:        appId,
 	}
 

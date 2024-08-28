@@ -40,14 +40,15 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-type FhirAuthServer struct {
+type FHIRAuthServer struct {
 	gorm.Model
 	TokenURL     string
 	ClientID     string
 	ClientSecret string
 	AppID        string
+	Scopes       string
 }
 
-func (FhirAuthServer) TableName() string {
+func (FHIRAuthServer) TableName() string {
 	return "auth_server"
 }

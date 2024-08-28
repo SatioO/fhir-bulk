@@ -1,10 +1,10 @@
 package auth
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 
@@ -17,11 +17,11 @@ func NewAuthClient() *authClient {
 	return &authClient{}
 }
 
-func (a *authClient) GenerateToken(request *domain.FhirAuthServer) (string, error) {
-	body := `grant_type=client_credentials&scope=system/Observation.read system/Patient.read system/Encounter.read`
+func (a *authClient) GenerateToken(request *domain.FHIRAuthServer) (string, error) {
+	body := `grant_type=client_credentials&scope=` + request.Scopes
 	req, err := http.NewRequest(http.MethodPost, request.TokenURL, strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Authorization", "Basic M2FiNTdiNDQtOGNjNi00ZWQ3LTg0MjktNDY5OTk5Mzc0Zjg0OlU4NU90bHVlUXB6MEstVmoycHNDYlJ4X2ZYd3JVc3h4")
+	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(request.ClientID+":"+request.ClientSecret)))
 
 	if err != nil {
 		return "", fmt.Errorf("client: could not create request: %v", err)
@@ -44,6 +44,5 @@ func (a *authClient) GenerateToken(request *domain.FhirAuthServer) (string, erro
 		return "", fmt.Errorf("client: could not parse response body: %s", err)
 	}
 
-	log.Println(response)
 	return response.AccessToken, nil
 }
