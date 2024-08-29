@@ -1,6 +1,9 @@
 package fhirapp
 
-import "github.com/satioO/fhir/v2/domain"
+import (
+	"github.com/satioO/fhir/v2/domain"
+	"github.com/satioO/fhir/v2/repositories"
+)
 
 type FHIRAppService interface {
 	GetApps() ([]domain.FHIRApp, error)
@@ -10,10 +13,10 @@ type FHIRAppService interface {
 }
 
 type service struct {
-	appRepo *FHIRAppRepo
+	appRepo *repositories.FHIRAppRepo
 }
 
-func NewFHIRAppService(appRepo *FHIRAppRepo) FHIRAppService {
+func NewFHIRAppService(appRepo *repositories.FHIRAppRepo) FHIRAppService {
 	return &service{appRepo}
 }
 

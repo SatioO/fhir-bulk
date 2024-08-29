@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/satioO/fhir/v2/domain"
+	"github.com/satioO/fhir/v2/repositories"
 )
 
 type AuthService interface {
@@ -10,11 +11,11 @@ type AuthService interface {
 }
 
 type service struct {
-	authRepo   *AuthRepo
+	authRepo   *repositories.AuthRepo
 	authClient *client
 }
 
-func NewAuthService(authRepo *AuthRepo, authClient *client) AuthService {
+func NewAuthService(authRepo *repositories.AuthRepo, authClient *client) AuthService {
 	return &service{authRepo, authClient}
 }
 

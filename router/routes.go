@@ -8,6 +8,7 @@ import (
 	"github.com/satioO/fhir/v2/handlers/bulkapi"
 	"github.com/satioO/fhir/v2/handlers/fhirapp"
 	"github.com/satioO/fhir/v2/handlers/resource"
+	"github.com/satioO/fhir/v2/repositories"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -31,19 +32,22 @@ func addRoutes(r *http.ServeMux) {
 
 	authClient := auth.NewAuthClient()
 	bulkFHIRClient := bulkapi.NewBulkFHIRClient()
+	fhirResourceClient := resource.NewFHIRResourceClient()
 
-	fhirAppRepo := fhirapp.NewFHIRAppRepo(conn)
-	authRepo := auth.NewAuthRepo(conn)
-	fhirJobRepo := bulkapi.NewFHIRJobRepo(conn)
-	fhirResourceRepo := resource.NewFHIRResourceRepo(conn)
+	fhirAppRepo := repositories.NewFHIRAppRepo(conn)
+	authRepo := repositories.NewAuthRepo(conn)
+	fhirJobRepo := repositories.NewFHIRJobRepo(conn)
+	fhirResourceRepo := repositories.NewFHIRResourceRepo(conn)
 
 	authService := auth.NewAuthService(authRepo, authClient)
 	fhirAppService := fhirapp.NewFHIRAppService(fhirAppRepo)
 	bulkApiService := bulkapi.NewBulkAPIService(fhirJobRepo, fhirAppRepo, fhirResourceRepo, bulkFHIRClient)
+	resourceService := resource.NewFHIRResourceService(fhirResourceRepo, fhirJobRepo, fhirAppRepo, fhirResourceClient)
 
 	fhirAppHandler := fhirapp.NewFHIRAppHandler(fhirAppService, authService)
 	authServerHandler := auth.NewAuthHandler(authService)
 	bulkApiHandler := bulkapi.NewBulkAPIHandler(bulkApiService)
+	resourceHandler := resource.NewFHIRResourceHandler(resourceService)
 
 	r.HandleFunc("GET /api/v1/fhir/apps", fhirAppHandler.GetApps)
 	r.HandleFunc("GET /api/v1/fhir/apps/{appId}", fhirAppHandler.GetAppById)
@@ -56,6 +60,9 @@ func addRoutes(r *http.ServeMux) {
 	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/jobs/{jobId}", bulkApiHandler.GetFHIRJobStatus)
 	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/jobs", bulkApiHandler.CreateNewFHIRJob)
 	r.HandleFunc("DELETE /api/v1/fhir/apps/{appId}/jobs/{jobId}", bulkApiHandler.DeleteFHIRJob)
+
+	r.HandleFunc("GET /api/v1/fhir/jobs/{jobId}/resources", resourceHandler.GetFHIRResourcesByJobID)
+	r.HandleFunc("GET /api/v1/fhir/jobs/{jobId}/resources/{resourceId}", resourceHandler.GetFHIRResource)
 }
 
 type DBServerConfig struct {

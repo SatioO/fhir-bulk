@@ -53,7 +53,7 @@ CREATE TABLE `fhir_resources` (
 
 SHOW TABLES;
 
--- INSERT INTO `fhir_jobs` (`id`, `status`, `app_id`) VALUES ('11ef-660b-04e7e2ec-9ba0-36bf4ca24292', 'submitted', 'cerner');
+-- INSERT INTO `fhir_jobs` (`id`, `status`, `app_id`) VALUES ('11ef-6620-290789d8-95d4-40ab2e778543', 'submitted', 'cerner');
 
 -- INSERT INTO `fhir_apps` (`id`, `base_url`, `token`, `status`) VALUES ('CERNER', 'https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d', '', 'active');
 -- INSERT INTO `fhir_apps` (`id`, `base_url`, `token`, `status`) VALUES ('EPIC', 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/DSTU2', '', 'inactive');

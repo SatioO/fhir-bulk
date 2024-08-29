@@ -4,8 +4,7 @@ import (
 	"fmt"
 
 	"github.com/satioO/fhir/v2/domain"
-	"github.com/satioO/fhir/v2/handlers/fhirapp"
-	"github.com/satioO/fhir/v2/handlers/resource"
+	"github.com/satioO/fhir/v2/repositories"
 )
 
 type BulkAPIService interface {
@@ -16,13 +15,13 @@ type BulkAPIService interface {
 }
 
 type service struct {
-	fhirJobRepo      *FHIRJobRepo
-	fhirAppRepo      *fhirapp.FHIRAppRepo
-	fhirResourceRepo *resource.FHIRResourceRepo
+	fhirJobRepo      *repositories.FHIRJobRepo
+	fhirAppRepo      *repositories.FHIRAppRepo
+	fhirResourceRepo *repositories.FHIRResourceRepo
 	bulkFHIRClient   *client
 }
 
-func NewBulkAPIService(fhirJobRepo *FHIRJobRepo, fhirAppRepo *fhirapp.FHIRAppRepo, fhirResourceRepo *resource.FHIRResourceRepo, bulkFHIRClient *client) BulkAPIService {
+func NewBulkAPIService(fhirJobRepo *repositories.FHIRJobRepo, fhirAppRepo *repositories.FHIRAppRepo, fhirResourceRepo *repositories.FHIRResourceRepo, bulkFHIRClient *client) BulkAPIService {
 	return &service{fhirJobRepo, fhirAppRepo, fhirResourceRepo, bulkFHIRClient}
 }
 
@@ -94,6 +93,5 @@ func (s *service) DeleteFHIRJob(appId, jobId string) error {
 		return err
 	}
 
-	s.bulkFHIRClient.DeleteFHIRJob(jobId)
-	return nil
+	return s.bulkFHIRClient.DeleteFHIRJob(jobId)
 }
