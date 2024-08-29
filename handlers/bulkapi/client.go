@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/satioO/fhir/v2/domain"
 )
 
 type client struct{}
@@ -13,18 +15,19 @@ func NewBulkFHIRClient() *client {
 	return &client{}
 }
 
-func (c *client) CreateNewJob(baseUrl string, request *TriggerFHIRJobRequest) (string, error) {
+func (c *client) CreateNewJob(app *domain.FHIRApp, request *TriggerFHIRJobRequest) (string, error) {
 	var URL string
 
 	if request.GroupID != "" {
-		URL = baseUrl + "/Group/" + request.GroupID + "/$export"
+		URL = app.BaseUrl + "/Group/" + request.GroupID + "/$export"
 	} else {
-		URL = baseUrl + "/Patient/$export"
+		URL = app.BaseUrl + "/Patient/$export"
 	}
 
 	req, err := http.NewRequest(http.MethodGet, URL, nil)
 	req.Header.Set("Accept", "application/fhir+json")
 	req.Header.Set("Prefer", "respond-async")
+	req.Header.Set("Authorization", "Bearer "+app.Token)
 
 	if err != nil {
 		return "", fmt.Errorf("client: could not create request: %v", err)
@@ -34,6 +37,10 @@ func (c *client) CreateNewJob(baseUrl string, request *TriggerFHIRJobRequest) (s
 
 	if err != nil {
 		return "", fmt.Errorf("client: error making http request: %s", err)
+	}
+
+	if res.StatusCode != http.StatusAccepted {
+		return "", fmt.Errorf("client: request failed with unknown error: %v", res)
 	}
 
 	contentUrl := res.Header.Get("Content-Location")

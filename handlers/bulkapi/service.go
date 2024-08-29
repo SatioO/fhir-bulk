@@ -34,7 +34,7 @@ func (s *service) CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (d
 		return domain.FHIRJob{}, err
 	}
 
-	jobId, err := s.bulkFHIRClient.CreateNewJob(app.BaseUrl, body)
+	jobId, err := s.bulkFHIRClient.CreateNewJob(&app, body)
 	if err != nil {
 		return domain.FHIRJob{}, err
 	}
