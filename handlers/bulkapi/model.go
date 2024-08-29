@@ -14,13 +14,18 @@ type TriggerFHIRJobResponse struct {
 }
 
 type FHIRResourceResponse struct {
-	Type string `json:"type"`
-	URL  string `json:"url"`
+	Type       string `json:"type"`
+	ResourceID string `json:"resourceId"`
 }
 
 type FHIRJobStatusClientResponse struct {
-	TransactionTime     time.Time              `json:"transactionTime"`
-	Request             string                 `json:"request"`
-	RequiresAccessToken bool                   `json:"requiresAccessToken"`
-	Output              []FHIRResourceResponse `json:"output"`
+	TransactionTime     time.Time                    `json:"transactionTime"`
+	Request             string                       `json:"request"`
+	RequiresAccessToken bool                         `json:"requiresAccessToken"`
+	Output              []FHIRResourceClientResponse `json:"output"`
+}
+
+type FHIRResourceClientResponse struct {
+	Type string `json:"type"`
+	URL  string `json:"url"`
 }

@@ -32,7 +32,7 @@ func (FHIRAuthServer) TableName() string {
 
 type FHIRJob struct {
 	gorm.Model
-	JobID  string
+	ID     string
 	AppID  string
 	Status JobStatus
 }

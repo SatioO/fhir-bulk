@@ -47,7 +47,7 @@ func (c *client) CreateNewJob(app *domain.FHIRApp, request *TriggerFHIRJobReques
 
 	contentUrl := res.Header.Get("Content-Location")
 
-	jobId, err := c.parseJobID(contentUrl)
+	jobId, err := c.parseId(contentUrl)
 	if err != nil {
 		return "", fmt.Errorf("client: error parsing content url: %s", err)
 	}
@@ -81,7 +81,18 @@ func (c *client) GetFHIRJobStatus(app *domain.FHIRApp, jobId string) (TriggerFHI
 		if err := json.Unmarshal(resBody, &response); err != nil {
 			return TriggerFHIRJobResponse{}, fmt.Errorf("client: could not parse response body: %s", err)
 		}
-		return TriggerFHIRJobResponse{AppID: app.ID, JobID: jobId, Status: "completed", Resources: response.Output}, nil
+
+		resources := []FHIRResourceResponse{}
+		for _, resource := range response.Output {
+			resourceId, err := c.parseId(resource.URL)
+			if err != nil {
+				return TriggerFHIRJobResponse{}, fmt.Errorf("client: error parsing resource url: %s", err)
+			}
+
+			resources = append(resources, FHIRResourceResponse{Type: resource.Type, ResourceID: resourceId})
+		}
+
+		return TriggerFHIRJobResponse{AppID: app.ID, JobID: jobId, Status: "completed", Resources: resources}, nil
 	} else if res.StatusCode == http.StatusAccepted {
 		resources := []FHIRResourceResponse{}
 		return TriggerFHIRJobResponse{AppID: app.ID, JobID: jobId, Status: "submitted", Resources: resources}, nil
@@ -94,7 +105,7 @@ func (c *client) DeleteFHIRJob(jobId string) error {
 	return nil
 }
 
-func (c *client) parseJobID(contentUrl string) (string, error) {
+func (c *client) parseId(contentUrl string) (string, error) {
 	parsedUrl, err := url.Parse(contentUrl)
 	if err != nil {
 		return "", err

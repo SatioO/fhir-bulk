@@ -1,6 +1,7 @@
 -- DROP DATABASE `fhir`;
 
 DROP TABLE `auth_servers`;
+DROP TABLE `fhir_resources`;
 DROP TABLE `fhir_jobs`;
 DROP TABLE `fhir_apps`;
 
@@ -27,8 +28,7 @@ CREATE TABLE `auth_servers` (
   FOREIGN KEY(`app_id`) REFERENCES `fhir_apps`(`id`)
 );
 CREATE TABLE `fhir_jobs` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `job_id` VARCHAR(255) NOT NULL,
+  `id` VARCHAR(255) NOT NULL,
   `status` VARCHAR(255) NOT NULL,
   `app_id` VARCHAR(50) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -37,10 +37,22 @@ CREATE TABLE `fhir_jobs` (
   PRIMARY KEY(`id`),
   FOREIGN KEY(`app_id`) REFERENCES `fhir_apps`(`id`)
 );
+CREATE TABLE `fhir_resources` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `job_id` VARCHAR(255) NOT NULL,
+  `type` VARCHAR(255) NOT NULL,
+  `app_id` VARCHAR(50) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` TIMESTAMP NULL,
+  PRIMARY KEY(`id`),
+  FOREIGN KEY(`app_id`) REFERENCES `fhir_apps`(`id`),
+  FOREIGN KEY(`job_id`) REFERENCES `fhir_jobs`(`id`)
+);
 
 SHOW TABLES;
 
--- INSERT INTO `fhir_jobs` (`job_id`, `status`, `app_id`) VALUES ('11ef-65e5-d8ccd782-973d-94c9d7d9e1e5', 'inprogress', 'cerner');
+-- INSERT INTO `fhir_jobs` (`id`, `status`, `app_id`) VALUES ('11ef-65f9-153872e0-9015-4fbe92a7a15b', 'inprogress', 'cerner');
 
 -- INSERT INTO `fhir_apps` (`id`, `base_url`, `token`, `status`) VALUES ('CERNER', 'https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d', '', 'active');
 -- INSERT INTO `fhir_apps` (`id`, `base_url`, `token`, `status`) VALUES ('EPIC', 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/DSTU2', '', 'inactive');
