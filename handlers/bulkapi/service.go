@@ -32,13 +32,11 @@ func (s *service) GetJobsByApp(appId string) ([]domain.FHIRJob, error) {
 
 func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse, error) {
 	app, err := s.fhirAppRepo.GetAppById(appId)
-
 	if err != nil {
 		return TriggerFHIRJobResponse{}, err
 	}
 
 	foundJob, err := s.fhirJobRepo.GetJobByID(jobId)
-
 	if err != nil {
 		return TriggerFHIRJobResponse{}, err
 	}
@@ -52,24 +50,17 @@ func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse,
 		foundJob.Status = domain.JobStatus(job.Status)
 		s.fhirJobRepo.UpdateJob(&foundJob)
 
-		foundResources, err := s.fhirResourceRepo.GetFHIRResourcesForJob(jobId)
-		if err != nil {
-			return TriggerFHIRJobResponse{}, err
+		var resources []domain.FHIRResource
+		for _, resource := range job.Resources {
+			resources = append(resources, domain.FHIRResource{
+				JobID:      jobId,
+				AppID:      appId,
+				ResourceID: resource.ResourceID,
+				Type:       resource.Type})
 		}
 
-		if len(foundResources) == 0 {
-			var resources []domain.FHIRResource
-			for _, resource := range job.Resources {
-				resources = append(resources, domain.FHIRResource{
-					JobID:      jobId,
-					AppID:      appId,
-					ResourceID: resource.ResourceID,
-					Type:       resource.Type})
-			}
-
-			if err := s.fhirResourceRepo.CreateFHIRResources(resources); err != nil {
-				return TriggerFHIRJobResponse{}, err
-			}
+		if err := s.fhirResourceRepo.CreateFHIRResources(resources); err != nil {
+			return TriggerFHIRJobResponse{}, err
 		}
 	}
 
@@ -78,7 +69,6 @@ func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse,
 
 func (s *service) CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (domain.FHIRJob, error) {
 	app, err := s.fhirAppRepo.GetAppById(appId)
-
 	if err != nil {
 		return domain.FHIRJob{}, err
 	}
@@ -98,7 +88,6 @@ func (s *service) CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (d
 
 func (s *service) DeleteFHIRJob(appId, jobId string) error {
 	_, err := s.fhirAppRepo.GetAppById(appId)
-
 	if err != nil {
 		return err
 	}

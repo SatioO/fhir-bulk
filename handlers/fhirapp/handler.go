@@ -21,7 +21,6 @@ func NewFHIRAppHandler(fhirAppService FHIRAppService, authService auth.AuthServi
 
 func (h *handler) GetApps(w http.ResponseWriter, r *http.Request) {
 	result, err := h.fhirAppService.GetApps()
-
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to get apps: %v", err), http.StatusInternalServerError)
 		return
@@ -44,9 +43,7 @@ func (h *handler) GetAppById(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) RegisterApp(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-
 	jsonObj, err := io.ReadAll(r.Body)
-
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to read body: %v", err), http.StatusBadRequest)
 		return

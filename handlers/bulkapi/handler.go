@@ -19,8 +19,8 @@ func NewBulkAPIHandler(bulkAPIService BulkAPIService) *handler {
 
 func (h *handler) GetFHIRJobsForApp(w http.ResponseWriter, r *http.Request) {
 	appId := r.PathValue("appId")
-	result, err := h.bulkAPIService.GetJobsByApp(appId)
 
+	result, err := h.bulkAPIService.GetJobsByApp(appId)
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to fetch jobs: %v", err), http.StatusInternalServerError)
 		return
@@ -32,8 +32,8 @@ func (h *handler) GetFHIRJobsForApp(w http.ResponseWriter, r *http.Request) {
 func (h *handler) GetFHIRJobStatus(w http.ResponseWriter, r *http.Request) {
 	appId := r.PathValue("appId")
 	jobId := r.PathValue("jobId")
-	result, err := h.bulkAPIService.GetFHIRJobStatus(appId, jobId)
 
+	result, err := h.bulkAPIService.GetFHIRJobStatus(appId, jobId)
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to fetch jobs status: %v", err), http.StatusInternalServerError)
 		return
@@ -47,7 +47,6 @@ func (h *handler) CreateNewFHIRJob(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
-
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to read request body: %s", err), http.StatusBadRequest)
 		return

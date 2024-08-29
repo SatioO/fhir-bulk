@@ -32,7 +32,6 @@ func (a *service) RegisterAuthServer(appId string, body *RegisterAuthServerReque
 	}
 
 	auth, err := a.authRepo.RegisterAuthServer(entity)
-
 	if err != nil {
 		return "", err
 	}

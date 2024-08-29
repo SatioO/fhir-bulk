@@ -19,8 +19,8 @@ func NewAuthHandler(authService AuthService) *handler {
 
 func (h *handler) GetAuthServerForApp(w http.ResponseWriter, r *http.Request) {
 	appId := r.PathValue("appId")
-	result, err := h.authService.GetAuthServerForApp(appId)
 
+	result, err := h.authService.GetAuthServerForApp(appId)
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to fetch auth server details: %v", err), http.StatusInternalServerError)
 		return
@@ -31,8 +31,8 @@ func (h *handler) GetAuthServerForApp(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) RegisterAuthServer(w http.ResponseWriter, r *http.Request) {
 	appId := r.PathValue("appId")
-	jsonObj, err := io.ReadAll(r.Body)
 
+	jsonObj, err := io.ReadAll(r.Body)
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to read body: %v", err), http.StatusBadRequest)
 		return
@@ -45,7 +45,6 @@ func (h *handler) RegisterAuthServer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result, err := h.authService.RegisterAuthServer(appId, &body)
-
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to register auth server: %v", err), http.StatusInternalServerError)
 		return
