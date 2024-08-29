@@ -7,6 +7,7 @@ import (
 	"github.com/satioO/fhir/v2/handlers/auth"
 	"github.com/satioO/fhir/v2/handlers/bulkapi"
 	"github.com/satioO/fhir/v2/handlers/fhirapp"
+	"github.com/satioO/fhir/v2/handlers/resource"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -34,10 +35,11 @@ func addRoutes(r *http.ServeMux) {
 	fhirAppRepo := fhirapp.NewFHIRAppRepo(conn)
 	authRepo := auth.NewAuthRepo(conn)
 	fhirJobRepo := bulkapi.NewFHIRJobRepo(conn)
+	fhirResourceRepo := resource.NewFHIRResourceRepo(conn)
 
 	authService := auth.NewAuthService(authRepo, authClient)
 	fhirAppService := fhirapp.NewFHIRAppService(fhirAppRepo)
-	bulkApiService := bulkapi.NewBulkAPIService(fhirJobRepo, fhirAppRepo, bulkFHIRClient)
+	bulkApiService := bulkapi.NewBulkAPIService(fhirJobRepo, fhirAppRepo, fhirResourceRepo, bulkFHIRClient)
 
 	fhirAppHandler := fhirapp.NewFHIRAppHandler(fhirAppService, authService)
 	authServerHandler := auth.NewAuthHandler(authService)

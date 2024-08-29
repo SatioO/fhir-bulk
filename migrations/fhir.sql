@@ -39,9 +39,10 @@ CREATE TABLE `fhir_jobs` (
 );
 CREATE TABLE `fhir_resources` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `job_id` VARCHAR(255) NOT NULL,
-  `type` VARCHAR(255) NOT NULL,
   `app_id` VARCHAR(50) NOT NULL,
+  `job_id` VARCHAR(255) NOT NULL,
+  `resource_id` VARCHAR(255) NOT NULL,
+  `type` VARCHAR(255) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` TIMESTAMP NULL,
@@ -52,7 +53,7 @@ CREATE TABLE `fhir_resources` (
 
 SHOW TABLES;
 
--- INSERT INTO `fhir_jobs` (`id`, `status`, `app_id`) VALUES ('11ef-65f9-153872e0-9015-4fbe92a7a15b', 'inprogress', 'cerner');
+-- INSERT INTO `fhir_jobs` (`id`, `status`, `app_id`) VALUES ('11ef-65f9-153872e0-9015-4fbe92a7a15b', 'submitted', 'cerner');
 
 -- INSERT INTO `fhir_apps` (`id`, `base_url`, `token`, `status`) VALUES ('CERNER', 'https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d', '', 'active');
 -- INSERT INTO `fhir_apps` (`id`, `base_url`, `token`, `status`) VALUES ('EPIC', 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/DSTU2', '', 'inactive');

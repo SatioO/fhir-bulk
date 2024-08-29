@@ -15,12 +15,24 @@ func NewFHIRJobRepo(db *gorm.DB) *FHIRJobRepo {
 
 func (r *FHIRJobRepo) GetJobsByApp(appId string) ([]domain.FHIRJob, error) {
 	var jobs []domain.FHIRJob
-	result := r.db.Where(domain.FHIRJob{AppID: appId}).Find(&jobs)
+	result := r.db.Where(domain.FHIRJob{AppID: appId}).First(&jobs)
 
 	return jobs, result.Error
 }
 
+func (r *FHIRJobRepo) GetJobByID(jobId string) (domain.FHIRJob, error) {
+	var job domain.FHIRJob
+	result := r.db.Where(domain.FHIRJob{ID: jobId}).First(&job)
+
+	return job, result.Error
+}
+
 func (r *FHIRJobRepo) CreateJob(entity *domain.FHIRJob) (domain.FHIRJob, error) {
+	result := r.db.Save(entity)
+	return *entity, result.Error
+}
+
+func (r *FHIRJobRepo) UpdateJob(entity *domain.FHIRJob) (domain.FHIRJob, error) {
 	result := r.db.Save(entity)
 	return *entity, result.Error
 }

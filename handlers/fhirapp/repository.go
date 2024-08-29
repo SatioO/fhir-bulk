@@ -23,7 +23,6 @@ func (d *FHIRAppRepo) GetApps() ([]domain.FHIRApp, error) {
 func (d *FHIRAppRepo) GetAppById(appId string) (domain.FHIRApp, error) {
 	var entity domain.FHIRApp
 	result := d.db.Where(domain.FHIRApp{ID: appId}).First(&entity)
-
 	return entity, result.Error
 }
 

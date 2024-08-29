@@ -5,6 +5,7 @@ import (
 
 	"github.com/satioO/fhir/v2/domain"
 	"github.com/satioO/fhir/v2/handlers/fhirapp"
+	"github.com/satioO/fhir/v2/handlers/resource"
 )
 
 type BulkAPIService interface {
@@ -15,13 +16,14 @@ type BulkAPIService interface {
 }
 
 type service struct {
-	fhirJobRepo    *FHIRJobRepo
-	fhirAppRepo    *fhirapp.FHIRAppRepo
-	bulkFHIRClient *client
+	fhirJobRepo      *FHIRJobRepo
+	fhirAppRepo      *fhirapp.FHIRAppRepo
+	fhirResourceRepo *resource.FHIRResourceRepo
+	bulkFHIRClient   *client
 }
 
-func NewBulkAPIService(fhirJobRepo *FHIRJobRepo, fhirAppRepo *fhirapp.FHIRAppRepo, bulkFHIRClient *client) BulkAPIService {
-	return &service{fhirJobRepo, fhirAppRepo, bulkFHIRClient}
+func NewBulkAPIService(fhirJobRepo *FHIRJobRepo, fhirAppRepo *fhirapp.FHIRAppRepo, fhirResourceRepo *resource.FHIRResourceRepo, bulkFHIRClient *client) BulkAPIService {
+	return &service{fhirJobRepo, fhirAppRepo, fhirResourceRepo, bulkFHIRClient}
 }
 
 func (s *service) GetJobsByApp(appId string) ([]domain.FHIRJob, error) {
@@ -35,7 +37,43 @@ func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse,
 		return TriggerFHIRJobResponse{}, err
 	}
 
-	return s.bulkFHIRClient.GetFHIRJobStatus(&app, jobId)
+	foundJob, err := s.fhirJobRepo.GetJobByID(jobId)
+
+	if err != nil {
+		return TriggerFHIRJobResponse{}, err
+	}
+
+	job, err := s.bulkFHIRClient.GetFHIRJobStatus(&app, jobId)
+	if err != nil {
+		return TriggerFHIRJobResponse{}, err
+	}
+
+	if foundJob.Status == "submitted" {
+		foundJob.Status = domain.JobStatus(job.Status)
+		s.fhirJobRepo.UpdateJob(&foundJob)
+
+		foundResources, err := s.fhirResourceRepo.GetFHIRResourcesForJob(jobId)
+		if err != nil {
+			return TriggerFHIRJobResponse{}, err
+		}
+
+		if len(foundResources) == 0 {
+			var resources []domain.FHIRResource
+			for _, resource := range job.Resources {
+				resources = append(resources, domain.FHIRResource{
+					JobID:      jobId,
+					AppID:      appId,
+					ResourceID: resource.ResourceID,
+					Type:       resource.Type})
+			}
+
+			if err := s.fhirResourceRepo.CreateFHIRResources(resources); err != nil {
+				return TriggerFHIRJobResponse{}, err
+			}
+		}
+	}
+
+	return job, nil
 }
 
 func (s *service) CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (domain.FHIRJob, error) {
