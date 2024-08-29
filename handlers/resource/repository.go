@@ -1,6 +1,8 @@
 package resource
 
 import (
+	"log"
+
 	"github.com/satioO/fhir/v2/domain"
 	"gorm.io/gorm"
 )
@@ -27,6 +29,8 @@ func (r *FHIRResourceRepo) CreateFHIRResource(entity *domain.FHIRResource) error
 }
 
 func (r *FHIRResourceRepo) CreateFHIRResources(entities []domain.FHIRResource) error {
+	log.Println("slice: ", entities)
+
 	result := r.db.Save(entities)
 
 	return result.Error

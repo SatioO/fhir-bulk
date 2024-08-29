@@ -2,6 +2,7 @@ package bulkapi
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/satioO/fhir/v2/domain"
 	"github.com/satioO/fhir/v2/handlers/fhirapp"
@@ -59,8 +60,11 @@ func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse,
 				Type:       resource.Type})
 		}
 
-		if err := s.fhirResourceRepo.CreateFHIRResources(resources); err != nil {
-			return TriggerFHIRJobResponse{}, err
+		log.Println(len(resources))
+		if len(resources) > 0 {
+			if err := s.fhirResourceRepo.CreateFHIRResources(resources); err != nil {
+				return TriggerFHIRJobResponse{}, err
+			}
 		}
 	}
 

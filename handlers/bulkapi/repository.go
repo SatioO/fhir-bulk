@@ -15,7 +15,7 @@ func NewFHIRJobRepo(db *gorm.DB) *FHIRJobRepo {
 
 func (r *FHIRJobRepo) GetJobsByApp(appId string) ([]domain.FHIRJob, error) {
 	var jobs []domain.FHIRJob
-	result := r.db.Where(domain.FHIRJob{AppID: appId}).First(&jobs)
+	result := r.db.Where(domain.FHIRJob{AppID: appId}).Find(&jobs)
 
 	return jobs, result.Error
 }
