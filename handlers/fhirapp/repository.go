@@ -1,4 +1,4 @@
-package fhir_app
+package fhirapp
 
 import (
 	"github.com/satioO/fhir/v2/domain"

@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/satioO/fhir/v2/handlers/auth"
-	"github.com/satioO/fhir/v2/handlers/fhir_app"
+	"github.com/satioO/fhir/v2/handlers/bulkapi"
+	"github.com/satioO/fhir/v2/handlers/fhirapp"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -29,21 +30,27 @@ func addRoutes(r *http.ServeMux) {
 
 	authClient := auth.NewAuthClient()
 
-	fhirAppRepo := fhir_app.NewFHIRAppRepo(conn)
+	fhirAppRepo := fhirapp.NewFHIRAppRepo(conn)
 	authRepo := auth.NewAuthRepo(conn)
+	fhirJobRepo := bulkapi.NewFHIRJobRepo(conn)
 
 	authService := auth.NewAuthService(authRepo, authClient)
-	fhirAppService := fhir_app.NewFHIRAppService(fhirAppRepo)
+	fhirAppService := fhirapp.NewFHIRAppService(fhirAppRepo)
+	bulkApiService := bulkapi.NewBulkAPIService(fhirJobRepo)
 
-	fhirAppHandler := fhir_app.NewFHIRAppHandler(fhirAppService, authService)
+	fhirAppHandler := fhirapp.NewFHIRAppHandler(fhirAppService, authService)
 	authServerHandler := auth.NewAuthHandler(authService)
+	bulkApiHandler := bulkapi.NewBulkAPIHandler(bulkApiService)
 
-	r.HandleFunc("GET /api/v1/fhir/app", fhirAppHandler.GetApps)
-	r.HandleFunc("GET /api/v1/fhir/app/{appId}", fhirAppHandler.GetAppById)
-	r.HandleFunc("POST /api/v1/fhir/app", fhirAppHandler.RegisterApp)
+	r.HandleFunc("GET /api/v1/fhir/apps", fhirAppHandler.GetApps)
+	r.HandleFunc("GET /api/v1/fhir/apps/{appId}", fhirAppHandler.GetAppById)
+	r.HandleFunc("POST /api/v1/fhir/apps", fhirAppHandler.RegisterApp)
 
-	r.HandleFunc("GET /api/v1/fhir/app/{appId}/auth", authServerHandler.GetAuthServerForApp)
-	r.HandleFunc("POST /api/v1/fhir/app/{appId}/auth", authServerHandler.RegisterAuthServer)
+	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/auth", authServerHandler.GetAuthServerForApp)
+	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/auth", authServerHandler.RegisterAuthServer)
+
+	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/job", bulkApiHandler.GetFHIRJobsForApp)
+	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/job", bulkApiHandler.CreateNewFHIRJob)
 }
 
 type DBServerConfig struct {

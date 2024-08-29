@@ -9,15 +9,15 @@ import (
 	"github.com/satioO/fhir/v2/api"
 )
 
-type authHandler struct {
+type handler struct {
 	authService AuthService
 }
 
-func NewAuthHandler(authService AuthService) *authHandler {
-	return &authHandler{authService}
+func NewAuthHandler(authService AuthService) *handler {
+	return &handler{authService}
 }
 
-func (h *authHandler) GetAuthServerForApp(w http.ResponseWriter, r *http.Request) {
+func (h *handler) GetAuthServerForApp(w http.ResponseWriter, r *http.Request) {
 	appId := r.PathValue("appId")
 	result, err := h.authService.GetAuthServerForApp(appId)
 
@@ -29,7 +29,7 @@ func (h *authHandler) GetAuthServerForApp(w http.ResponseWriter, r *http.Request
 	api.SuccessJson(w, r, result)
 }
 
-func (h *authHandler) RegisterAuthServer(w http.ResponseWriter, r *http.Request) {
+func (h *handler) RegisterAuthServer(w http.ResponseWriter, r *http.Request) {
 	appId := r.PathValue("appId")
 	jsonObj, err := io.ReadAll(r.Body)
 
