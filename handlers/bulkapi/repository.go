@@ -27,12 +27,7 @@ func (r *FHIRJobRepo) GetJobByID(jobId string) (domain.FHIRJob, error) {
 	return job, result.Error
 }
 
-func (r *FHIRJobRepo) CreateJob(entity *domain.FHIRJob) (domain.FHIRJob, error) {
-	result := r.db.Save(entity)
-	return *entity, result.Error
-}
-
-func (r *FHIRJobRepo) UpdateJob(entity *domain.FHIRJob) (domain.FHIRJob, error) {
+func (r *FHIRJobRepo) CreateOrUpdateJob(entity *domain.FHIRJob) (domain.FHIRJob, error) {
 	result := r.db.Save(entity)
 	return *entity, result.Error
 }

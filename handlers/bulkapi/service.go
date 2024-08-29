@@ -2,7 +2,6 @@ package bulkapi
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/satioO/fhir/v2/domain"
 	"github.com/satioO/fhir/v2/handlers/fhirapp"
@@ -32,7 +31,7 @@ func (s *service) GetJobsByApp(appId string) ([]domain.FHIRJob, error) {
 }
 
 func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse, error) {
-	app, err := s.fhirAppRepo.GetAppById(appId)
+	foundApp, err := s.fhirAppRepo.GetAppById(appId)
 	if err != nil {
 		return TriggerFHIRJobResponse{}, err
 	}
@@ -42,15 +41,12 @@ func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse,
 		return TriggerFHIRJobResponse{}, err
 	}
 
-	job, err := s.bulkFHIRClient.GetFHIRJobStatus(&app, jobId)
+	job, err := s.bulkFHIRClient.GetFHIRJobStatus(&foundApp, jobId)
 	if err != nil {
 		return TriggerFHIRJobResponse{}, err
 	}
 
 	if foundJob.Status == "submitted" {
-		foundJob.Status = domain.JobStatus(job.Status)
-		s.fhirJobRepo.UpdateJob(&foundJob)
-
 		var resources []domain.FHIRResource
 		for _, resource := range job.Resources {
 			resources = append(resources, domain.FHIRResource{
@@ -60,8 +56,10 @@ func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse,
 				Type:       resource.Type})
 		}
 
-		log.Println(len(resources))
 		if len(resources) > 0 {
+			foundJob.Status = domain.JobStatus(job.Status)
+			s.fhirJobRepo.CreateOrUpdateJob(&foundJob)
+
 			if err := s.fhirResourceRepo.CreateFHIRResources(resources); err != nil {
 				return TriggerFHIRJobResponse{}, err
 			}
@@ -82,7 +80,7 @@ func (s *service) CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (d
 		return domain.FHIRJob{}, err
 	}
 
-	job, err := s.fhirJobRepo.CreateJob(&domain.FHIRJob{ID: jobId, AppID: appId, Status: "submitted"})
+	job, err := s.fhirJobRepo.CreateOrUpdateJob(&domain.FHIRJob{ID: jobId, AppID: appId, Status: "submitted"})
 	if err != nil {
 		return domain.FHIRJob{}, fmt.Errorf("error creating fhir job: %s", err)
 	}
