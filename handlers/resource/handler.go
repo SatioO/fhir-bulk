@@ -40,10 +40,9 @@ func (h *handler) GetFHIRResource(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/fhir+ndjson")
 	w.WriteHeader(http.StatusOK)
 
-	// Write the response body
 	_, err = w.Write(result)
 	if err != nil {
-		http.Error(w, "Failed to write response", http.StatusInternalServerError)
+		api.Error(w, r, fmt.Errorf("failed to write response"), http.StatusInternalServerError)
 		return
 	}
 }
