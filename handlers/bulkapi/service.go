@@ -9,6 +9,7 @@ import (
 
 type BulkAPIService interface {
 	GetJobsByApp(appId string) ([]domain.FHIRJob, error)
+	GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse, error)
 	CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (domain.FHIRJob, error)
 	DeleteFHIRJob(appId, jobId string) error
 }
@@ -27,6 +28,16 @@ func (s *service) GetJobsByApp(appId string) ([]domain.FHIRJob, error) {
 	return s.fhirJobRepo.GetJobsByApp(appId)
 }
 
+func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse, error) {
+	app, err := s.fhirAppRepo.GetAppById(appId)
+
+	if err != nil {
+		return TriggerFHIRJobResponse{}, err
+	}
+
+	return s.bulkFHIRClient.GetFHIRJobStatus(&app, jobId)
+}
+
 func (s *service) CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (domain.FHIRJob, error) {
 	app, err := s.fhirAppRepo.GetAppById(appId)
 
@@ -39,7 +50,7 @@ func (s *service) CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (d
 		return domain.FHIRJob{}, err
 	}
 
-	job, err := s.fhirJobRepo.CreateJob(&domain.FHIRJob{JobID: jobId, AppID: appId, Status: "inprogress"})
+	job, err := s.fhirJobRepo.CreateJob(&domain.FHIRJob{JobID: jobId, AppID: appId, Status: "submitted"})
 	if err != nil {
 		return domain.FHIRJob{}, fmt.Errorf("error creating fhir job: %s", err)
 	}

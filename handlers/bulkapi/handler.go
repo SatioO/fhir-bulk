@@ -29,6 +29,19 @@ func (h *handler) GetFHIRJobsForApp(w http.ResponseWriter, r *http.Request) {
 	api.SuccessJson(w, r, result)
 }
 
+func (h *handler) GetFHIRJobStatus(w http.ResponseWriter, r *http.Request) {
+	appId := r.PathValue("appId")
+	jobId := r.PathValue("jobId")
+	result, err := h.bulkAPIService.GetFHIRJobStatus(appId, jobId)
+
+	if err != nil {
+		api.Error(w, r, fmt.Errorf("failed to fetch jobs status: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	api.SuccessJson(w, r, result)
+}
+
 func (h *handler) CreateNewFHIRJob(w http.ResponseWriter, r *http.Request) {
 	appId := r.PathValue("appId")
 

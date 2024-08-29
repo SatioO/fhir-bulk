@@ -51,6 +51,7 @@ func addRoutes(r *http.ServeMux) {
 	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/auth", authServerHandler.RegisterAuthServer)
 
 	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/jobs", bulkApiHandler.GetFHIRJobsForApp)
+	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/jobs/{jobId}", bulkApiHandler.GetFHIRJobStatus)
 	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/jobs", bulkApiHandler.CreateNewFHIRJob)
 	r.HandleFunc("DELETE /api/v1/fhir/apps/{appId}/jobs/{jobId}", bulkApiHandler.DeleteFHIRJob)
 }

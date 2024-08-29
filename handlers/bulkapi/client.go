@@ -1,7 +1,9 @@
 package bulkapi
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -40,7 +42,7 @@ func (c *client) CreateNewJob(app *domain.FHIRApp, request *TriggerFHIRJobReques
 	}
 
 	if res.StatusCode != http.StatusAccepted {
-		return "", fmt.Errorf("client: request failed with unknown error: %v", res)
+		return "", fmt.Errorf("client: request failed with error: %v", res)
 	}
 
 	contentUrl := res.Header.Get("Content-Location")
@@ -51,6 +53,41 @@ func (c *client) CreateNewJob(app *domain.FHIRApp, request *TriggerFHIRJobReques
 	}
 
 	return jobId, nil
+}
+
+func (c *client) GetFHIRJobStatus(app *domain.FHIRApp, jobId string) (TriggerFHIRJobResponse, error) {
+	req, err := http.NewRequest(http.MethodGet, app.BaseUrl+"/bulk-export/jobs/"+jobId, nil)
+	req.Header.Set("Accept", "application/fhir+json")
+	req.Header.Set("Authorization", "Bearer "+app.Token)
+
+	if err != nil {
+		return TriggerFHIRJobResponse{}, fmt.Errorf("client: could not create request: %v", err)
+	}
+
+	res, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		return TriggerFHIRJobResponse{}, fmt.Errorf("client: error making http request: %s", err)
+	}
+
+	if res.StatusCode == http.StatusOK {
+		defer res.Body.Close()
+		resBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			return TriggerFHIRJobResponse{}, fmt.Errorf("client: could not read response body: %s", err)
+		}
+
+		var response FHIRJobStatusClientResponse
+		if err := json.Unmarshal(resBody, &response); err != nil {
+			return TriggerFHIRJobResponse{}, fmt.Errorf("client: could not parse response body: %s", err)
+		}
+		return TriggerFHIRJobResponse{AppID: app.ID, JobID: jobId, Status: "completed", Resources: response.Output}, nil
+	} else if res.StatusCode == http.StatusAccepted {
+		resources := []FHIRResourceResponse{}
+		return TriggerFHIRJobResponse{AppID: app.ID, JobID: jobId, Status: "submitted", Resources: resources}, nil
+	} else {
+		return TriggerFHIRJobResponse{}, fmt.Errorf("client: request failed with error: %v", res)
+	}
 }
 
 func (c *client) DeleteFHIRJob(jobId string) error {

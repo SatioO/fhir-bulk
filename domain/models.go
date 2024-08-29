@@ -40,3 +40,15 @@ type FHIRJob struct {
 func (FHIRJob) TableName() string {
 	return "fhir_jobs"
 }
+
+type FHIRResource struct {
+	gorm.Model
+	JobID      string
+	AppID      string
+	Type       string
+	ResourceID string
+}
+
+func (FHIRResource) TableName() string {
+	return "fhir_resources"
+}
