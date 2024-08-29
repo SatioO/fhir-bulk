@@ -35,7 +35,7 @@ func (h *handler) GetAppById(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.fhirAppService.GetAppById(appId)
 	if err != nil {
-		api.Error(w, r, fmt.Errorf("failed to fetch app: %v", err), http.StatusBadRequest)
+		api.Error(w, r, fmt.Errorf("failed to fetch app: %v", err), http.StatusInternalServerError)
 		return
 	}
 

@@ -22,7 +22,7 @@ func (h *handler) GetAuthServerForApp(w http.ResponseWriter, r *http.Request) {
 	result, err := h.authService.GetAuthServerForApp(appId)
 
 	if err != nil {
-		api.Error(w, r, fmt.Errorf("failed to fetch client: %v", err), http.StatusBadRequest)
+		api.Error(w, r, fmt.Errorf("failed to fetch auth server details: %v", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -47,7 +47,7 @@ func (h *handler) RegisterAuthServer(w http.ResponseWriter, r *http.Request) {
 	result, err := h.authService.RegisterAuthServer(appId, &body)
 
 	if err != nil {
-		api.Error(w, r, fmt.Errorf("failed to fetch client: %v", err), http.StatusBadRequest)
+		api.Error(w, r, fmt.Errorf("failed to register auth server: %v", err), http.StatusInternalServerError)
 		return
 	}
 

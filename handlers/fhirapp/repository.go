@@ -5,34 +5,34 @@ import (
 	"gorm.io/gorm"
 )
 
-type repository struct {
+type FHIRAppRepo struct {
 	db *gorm.DB
 }
 
-func NewFHIRAppRepo(db *gorm.DB) *repository {
-	return &repository{db}
+func NewFHIRAppRepo(db *gorm.DB) *FHIRAppRepo {
+	return &FHIRAppRepo{db}
 }
 
-func (d *repository) GetApps() ([]domain.FHIRApp, error) {
+func (d *FHIRAppRepo) GetApps() ([]domain.FHIRApp, error) {
 	var entity []domain.FHIRApp
 	result := d.db.Find(&entity)
 
 	return entity, result.Error
 }
 
-func (d *repository) GetAppById(appId string) (domain.FHIRApp, error) {
+func (d *FHIRAppRepo) GetAppById(appId string) (domain.FHIRApp, error) {
 	var entity domain.FHIRApp
 	result := d.db.Where(domain.FHIRApp{ID: appId}).First(&entity)
 
 	return entity, result.Error
 }
 
-func (d *repository) CreateApp(entity domain.FHIRApp) (domain.FHIRApp, error) {
+func (d *FHIRAppRepo) CreateApp(entity domain.FHIRApp) (domain.FHIRApp, error) {
 	result := d.db.Create(&entity)
 	return entity, result.Error
 }
 
-func (d *repository) UpdateToken(appId, token string) error {
+func (d *FHIRAppRepo) UpdateToken(appId, token string) error {
 	var entity domain.FHIRApp
 	result := d.db.Where(domain.FHIRApp{ID: appId}).First(&entity)
 	if result.Error != nil {

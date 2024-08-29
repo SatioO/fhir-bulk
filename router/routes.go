@@ -29,6 +29,7 @@ func addRoutes(r *http.ServeMux) {
 	conn := ConnectToDB(&config)
 
 	authClient := auth.NewAuthClient()
+	bulkFHIRClient := bulkapi.NewBulkFHIRClient()
 
 	fhirAppRepo := fhirapp.NewFHIRAppRepo(conn)
 	authRepo := auth.NewAuthRepo(conn)
@@ -36,7 +37,7 @@ func addRoutes(r *http.ServeMux) {
 
 	authService := auth.NewAuthService(authRepo, authClient)
 	fhirAppService := fhirapp.NewFHIRAppService(fhirAppRepo)
-	bulkApiService := bulkapi.NewBulkAPIService(fhirJobRepo)
+	bulkApiService := bulkapi.NewBulkAPIService(fhirJobRepo, fhirAppRepo, bulkFHIRClient)
 
 	fhirAppHandler := fhirapp.NewFHIRAppHandler(fhirAppService, authService)
 	authServerHandler := auth.NewAuthHandler(authService)

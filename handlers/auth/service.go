@@ -10,11 +10,11 @@ type AuthService interface {
 }
 
 type service struct {
-	authRepo   *repository
+	authRepo   *AuthRepo
 	authClient *client
 }
 
-func NewAuthService(authRepo *repository, authClient *client) AuthService {
+func NewAuthService(authRepo *AuthRepo, authClient *client) AuthService {
 	return &service{authRepo, authClient}
 }
 
