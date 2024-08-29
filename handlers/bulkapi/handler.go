@@ -13,3 +13,5 @@ func NewBulkAPIHandler(bulkAPIService BulkAPIService) *handler {
 func (h *handler) CreateNewFHIRJob(w http.ResponseWriter, r *http.Request) {}
 
 func (h *handler) GetFHIRJobsForApp(w http.ResponseWriter, r *http.Request) {}
+
+func (h *handler) DeleteFHIRJob(w http.ResponseWriter, r *http.Request) {}

@@ -11,13 +11,13 @@ import (
 	"github.com/satioO/fhir/v2/domain"
 )
 
-type authClient struct{}
+type client struct{}
 
-func NewAuthClient() *authClient {
-	return &authClient{}
+func NewAuthClient() *client {
+	return &client{}
 }
 
-func (a *authClient) GenerateToken(request *domain.FHIRAuthServer) (string, error) {
+func (c *client) GenerateToken(request *domain.FHIRAuthServer) (string, error) {
 	body := `grant_type=client_credentials&scope=` + request.Scopes
 	req, err := http.NewRequest(http.MethodPost, request.TokenURL, strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")

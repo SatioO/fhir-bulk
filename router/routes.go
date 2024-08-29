@@ -49,8 +49,9 @@ func addRoutes(r *http.ServeMux) {
 	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/auth", authServerHandler.GetAuthServerForApp)
 	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/auth", authServerHandler.RegisterAuthServer)
 
-	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/job", bulkApiHandler.GetFHIRJobsForApp)
-	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/job", bulkApiHandler.CreateNewFHIRJob)
+	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/jobs", bulkApiHandler.GetFHIRJobsForApp)
+	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/jobs", bulkApiHandler.CreateNewFHIRJob)
+	r.HandleFunc("DELETE /api/v1/fhir/apps/{appId}/jobs/{jobId}", bulkApiHandler.DeleteFHIRJob)
 }
 
 type DBServerConfig struct {

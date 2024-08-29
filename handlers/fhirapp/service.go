@@ -10,10 +10,10 @@ type FHIRAppService interface {
 }
 
 type service struct {
-	appRepo *FHIRAppRepo
+	appRepo *repository
 }
 
-func NewFHIRAppService(appRepo *FHIRAppRepo) FHIRAppService {
+func NewFHIRAppService(appRepo *repository) FHIRAppService {
 	return &service{appRepo}
 }
 

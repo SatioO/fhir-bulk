@@ -4,6 +4,8 @@ import (
 	"gorm.io/gorm"
 )
 
+type JobStatus string
+
 type FHIRApp struct {
 	gorm.Model
 	ID      string
@@ -12,7 +14,7 @@ type FHIRApp struct {
 }
 
 func (FHIRApp) TableName() string {
-	return "fhir_app"
+	return "fhir_apps"
 }
 
 type FHIRAuthServer struct {
@@ -25,5 +27,16 @@ type FHIRAuthServer struct {
 }
 
 func (FHIRAuthServer) TableName() string {
-	return "auth_server"
+	return "auth_servers"
+}
+
+type FHIRJob struct {
+	gorm.Model
+	JobID  string
+	AppID  string
+	Status JobStatus
+}
+
+func (FHIRJob) TableName() string {
+	return "fhir_jobs"
 }

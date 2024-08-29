@@ -2,10 +2,10 @@ package bulkapi
 
 import "gorm.io/gorm"
 
-type FHIRJobRepo struct {
+type repository struct {
 	db *gorm.DB
 }
 
-func NewFHIRJobRepo(db *gorm.DB) *FHIRJobRepo {
-	return &FHIRJobRepo{db}
+func NewFHIRJobRepo(db *gorm.DB) *repository {
+	return &repository{db}
 }

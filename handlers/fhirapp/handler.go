@@ -12,11 +12,11 @@ import (
 
 type handler struct {
 	fhirAppService FHIRAppService
-	auth           auth.AuthService
+	authService    auth.AuthService
 }
 
-func NewFHIRAppHandler(fhirAppService FHIRAppService, auth auth.AuthService) *handler {
-	return &handler{fhirAppService, auth}
+func NewFHIRAppHandler(fhirAppService FHIRAppService, authService auth.AuthService) *handler {
+	return &handler{fhirAppService, authService}
 }
 
 func (h *handler) GetApps(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +64,7 @@ func (h *handler) RegisterApp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.auth.RegisterAuthServer(app.ID, &body.RegisterAuthServerRequest)
+	token, err := h.authService.RegisterAuthServer(app.ID, &body.RegisterAuthServerRequest)
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to create auth server: %v", err), http.StatusInternalServerError)
 		return

@@ -3,9 +3,9 @@ package bulkapi
 type BulkAPIService interface{}
 
 type service struct {
-	fhirJobRepo *FHIRJobRepo
+	fhirJobRepo *repository
 }
 
-func NewBulkAPIService(fhirJobRepo *FHIRJobRepo) BulkAPIService {
+func NewBulkAPIService(fhirJobRepo *repository) BulkAPIService {
 	return &service{fhirJobRepo}
 }
