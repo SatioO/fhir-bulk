@@ -79,7 +79,7 @@ func (s *service) CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (d
 		return domain.FHIRJob{}, domain.ErrNotFound
 	}
 
-	job, err := s.fhirJobRepo.CreateOrUpdateJob(&domain.FHIRJob{ID: jobId, AppID: appId, Status: "submitted"})
+	job, err := s.fhirJobRepo.CreateOrUpdateJob(&domain.FHIRJob{ID: jobId, AppID: appId, Status: "submitted", Resources: []domain.FHIRResource{}})
 	if err != nil {
 		return domain.FHIRJob{}, fmt.Errorf("error creating fhir job: %s", err)
 	}
