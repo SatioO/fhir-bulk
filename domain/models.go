@@ -11,6 +11,7 @@ type FHIRApp struct {
 	ID      string
 	BaseUrl string
 	Token   string
+	Jobs    []FHIRJob `gorm:"foreignKey:AppID"`
 }
 
 func (FHIRApp) TableName() string {
@@ -32,9 +33,10 @@ func (FHIRAuthServer) TableName() string {
 
 type FHIRJob struct {
 	gorm.Model
-	ID     string
-	AppID  string
-	Status JobStatus
+	ID        string
+	AppID     string
+	Status    JobStatus
+	Resources []FHIRResource `gorm:"foreignKey:JobID"`
 }
 
 func (FHIRJob) TableName() string {

@@ -19,7 +19,7 @@ func NewBulkAPIHandler(bulkAPIService BulkAPIService) *handler {
 }
 
 func (h *handler) GetFHIRJobsForApp(w http.ResponseWriter, r *http.Request) {
-	appId := r.PathValue("appId")
+	appId := r.Header.Get("X-App-Id")
 
 	result, err := h.bulkAPIService.GetJobsByApp(appId)
 	if err != nil {
@@ -31,7 +31,7 @@ func (h *handler) GetFHIRJobsForApp(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) GetFHIRJobStatus(w http.ResponseWriter, r *http.Request) {
-	appId := r.PathValue("appId")
+	appId := r.Header.Get("X-App-Id")
 	jobId := r.PathValue("jobId")
 
 	result, err := h.bulkAPIService.GetFHIRJobStatus(appId, jobId)
@@ -44,7 +44,7 @@ func (h *handler) GetFHIRJobStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) CreateNewFHIRJob(w http.ResponseWriter, r *http.Request) {
-	appId := r.PathValue("appId")
+	appId := r.Header.Get("X-App-Id")
 
 	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
@@ -69,7 +69,7 @@ func (h *handler) CreateNewFHIRJob(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) DeleteFHIRJob(w http.ResponseWriter, r *http.Request) {
-	appId := r.PathValue("appId")
+	appId := r.Header.Get("X-App-Id")
 	jobId := r.PathValue("jobId")
 
 	h.bulkAPIService.DeleteFHIRJob(appId, jobId)

@@ -31,7 +31,7 @@ func (h *handler) GetApps(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) GetAppById(w http.ResponseWriter, r *http.Request) {
-	appId := r.PathValue("appId")
+	appId := r.Header.Get("X-App-Id")
 
 	result, err := h.fhirAppService.GetAppById(appId)
 	if err != nil {

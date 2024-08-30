@@ -19,9 +19,7 @@ func NewAuthHandler(authService AuthService) *handler {
 }
 
 func (h *handler) GetAuthServerForApp(w http.ResponseWriter, r *http.Request) {
-	appId := r.PathValue("appId")
-
-	result, err := h.authService.GetAuthServerForApp(appId)
+	result, err := h.authService.GetAuthServerForApp(r.Header.Get("X-App-Id"))
 	if err != nil {
 		api.Error(w, r, fmt.Errorf("failed to fetch auth server details: %v", err), http.StatusInternalServerError)
 		return
