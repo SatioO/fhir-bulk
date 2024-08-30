@@ -14,10 +14,13 @@ import (
 )
 
 func RegisterRoutes() *http.ServeMux {
-	r := http.NewServeMux()
-	addRoutes(r)
+	v1 := http.NewServeMux()
+	addRoutes(v1)
 
-	return r
+	main := http.NewServeMux()
+	main.Handle("/api/v1/", http.StripPrefix("/api/v1", v1))
+
+	return main
 }
 
 func addRoutes(r *http.ServeMux) {
@@ -49,20 +52,20 @@ func addRoutes(r *http.ServeMux) {
 	bulkApiHandler := bulkapi.NewBulkAPIHandler(bulkApiService)
 	resourceHandler := resource.NewFHIRResourceHandler(resourceService)
 
-	r.HandleFunc("GET /api/v1/fhir/apps", fhirAppHandler.GetApps)
-	r.HandleFunc("GET /api/v1/fhir/apps/{appId}", fhirAppHandler.GetAppById)
-	r.HandleFunc("POST /api/v1/fhir/apps", fhirAppHandler.RegisterApp)
+	r.HandleFunc("GET /apps", fhirAppHandler.GetApps)
+	r.HandleFunc("GET /apps/{appId}", fhirAppHandler.GetAppById)
+	r.HandleFunc("POST /apps", fhirAppHandler.RegisterApp)
 
-	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/auth", authServerHandler.GetAuthServerForApp)
-	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/auth", authServerHandler.RegisterAuthServer)
+	r.HandleFunc("GET /apps/{appId}/auth", authServerHandler.GetAuthServerForApp)
+	r.HandleFunc("POST /apps/{appId}/auth", authServerHandler.RegisterAuthServer)
 
-	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/jobs", bulkApiHandler.GetFHIRJobsForApp)
-	r.HandleFunc("GET /api/v1/fhir/apps/{appId}/jobs/{jobId}", bulkApiHandler.GetFHIRJobStatus)
-	r.HandleFunc("POST /api/v1/fhir/apps/{appId}/jobs", bulkApiHandler.CreateNewFHIRJob)
-	r.HandleFunc("DELETE /api/v1/fhir/apps/{appId}/jobs/{jobId}", bulkApiHandler.DeleteFHIRJob)
+	r.HandleFunc("GET /apps/{appId}/jobs", bulkApiHandler.GetFHIRJobsForApp)
+	r.HandleFunc("GET /apps/{appId}/jobs/{jobId}", bulkApiHandler.GetFHIRJobStatus)
+	r.HandleFunc("POST /apps/{appId}/jobs", bulkApiHandler.CreateNewFHIRJob)
+	r.HandleFunc("DELETE /apps/{appId}/jobs/{jobId}", bulkApiHandler.DeleteFHIRJob)
 
-	r.HandleFunc("GET /api/v1/fhir/jobs/{jobId}/resources", resourceHandler.GetFHIRResourcesByJobID)
-	r.HandleFunc("GET /api/v1/fhir/jobs/{jobId}/resources/{resourceId}", resourceHandler.GetFHIRResource)
+	r.HandleFunc("GET /jobs/{jobId}/resources", resourceHandler.GetFHIRResourcesByJobID)
+	r.HandleFunc("GET /jobs/{jobId}/resources/{resourceId}", resourceHandler.GetFHIRResource)
 }
 
 type DBServerConfig struct {
