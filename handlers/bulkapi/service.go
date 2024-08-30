@@ -32,12 +32,12 @@ func (s *service) GetJobsByApp(appId string) ([]domain.FHIRJob, error) {
 func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse, error) {
 	foundApp, err := s.fhirAppRepo.GetAppById(appId)
 	if err != nil {
-		return TriggerFHIRJobResponse{}, err
+		return TriggerFHIRJobResponse{}, domain.ErrNotFound
 	}
 
 	foundJob, err := s.fhirJobRepo.GetJobByID(jobId)
 	if err != nil {
-		return TriggerFHIRJobResponse{}, err
+		return TriggerFHIRJobResponse{}, domain.ErrNotFound
 	}
 
 	job, err := s.bulkFHIRClient.GetFHIRJobStatus(&foundApp, jobId)
@@ -71,12 +71,12 @@ func (s *service) GetFHIRJobStatus(appId, jobId string) (TriggerFHIRJobResponse,
 func (s *service) CreateNewFHIRJob(appId string, body *TriggerFHIRJobRequest) (domain.FHIRJob, error) {
 	app, err := s.fhirAppRepo.GetAppById(appId)
 	if err != nil {
-		return domain.FHIRJob{}, err
+		return domain.FHIRJob{}, domain.ErrNotFound
 	}
 
 	jobId, err := s.bulkFHIRClient.CreateNewJob(&app, body)
 	if err != nil {
-		return domain.FHIRJob{}, err
+		return domain.FHIRJob{}, domain.ErrNotFound
 	}
 
 	job, err := s.fhirJobRepo.CreateOrUpdateJob(&domain.FHIRJob{ID: jobId, AppID: appId, Status: "submitted"})

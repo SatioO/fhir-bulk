@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/satioO/fhir/v2/api"
+	"github.com/satioO/fhir/v2/domain"
 	"github.com/satioO/fhir/v2/handlers/auth"
 )
 
@@ -45,13 +46,13 @@ func (h *handler) RegisterApp(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	jsonObj, err := io.ReadAll(r.Body)
 	if err != nil {
-		api.Error(w, r, fmt.Errorf("failed to read body: %v", err), http.StatusBadRequest)
+		api.Error(w, r, domain.ErrReadingRequestBody, http.StatusBadRequest)
 		return
 	}
 
 	var body CreateFHIRAppRequest
 	if err := json.Unmarshal(jsonObj, &body); err != nil {
-		api.Error(w, r, fmt.Errorf("failed to parse body: %v", err), http.StatusBadRequest)
+		api.Error(w, r, domain.ErrParsingRequestBody, http.StatusBadRequest)
 		return
 	}
 

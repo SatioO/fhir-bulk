@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/satioO/fhir/v2/api"
+	"github.com/satioO/fhir/v2/domain"
 )
 
 type handler struct {
@@ -34,13 +35,13 @@ func (h *handler) RegisterAuthServer(w http.ResponseWriter, r *http.Request) {
 
 	jsonObj, err := io.ReadAll(r.Body)
 	if err != nil {
-		api.Error(w, r, fmt.Errorf("failed to read body: %v", err), http.StatusBadRequest)
+		api.Error(w, r, domain.ErrReadingRequestBody, http.StatusBadRequest)
 		return
 	}
 
 	var body RegisterAuthServerRequest
 	if err := json.Unmarshal(jsonObj, &body); err != nil {
-		api.Error(w, r, fmt.Errorf("failed to parse body: %v", err), http.StatusBadRequest)
+		api.Error(w, r, domain.ErrParsingRequestBody, http.StatusBadRequest)
 		return
 	}
 

@@ -28,12 +28,12 @@ func (s *service) GetFHIRResourcesByJobID(jobId string) ([]domain.FHIRResource, 
 func (s *service) GetFHIRResource(jobId, resourceId string) ([]byte, error) {
 	foundJob, err := s.fhirJobRepo.GetJobByID(jobId)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrNotFound
 	}
 
 	foundApp, err := s.fhirAppRepo.GetAppById(foundJob.AppID)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrNotFound
 	}
 
 	return s.fhirResourceClient.GetFHIRResource(&foundApp, resourceId)

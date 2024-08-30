@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/satioO/fhir/v2/api"
+	"github.com/satioO/fhir/v2/domain"
 )
 
 type handler struct {
@@ -48,13 +49,13 @@ func (h *handler) CreateNewFHIRJob(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		api.Error(w, r, fmt.Errorf("failed to read request body: %s", err), http.StatusBadRequest)
+		api.Error(w, r, domain.ErrReadingRequestBody, http.StatusBadRequest)
 		return
 	}
 
 	var request TriggerFHIRJobRequest
 	if err := json.Unmarshal(body, &request); err != nil {
-		api.Error(w, r, fmt.Errorf("failed to parse request body:%s", err), http.StatusInternalServerError)
+		api.Error(w, r, domain.ErrParsingRequestBody, http.StatusInternalServerError)
 		return
 	}
 
